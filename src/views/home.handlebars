@@ -1,0 +1,41 @@
+<!-- views/home.handlebars -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+    
+    <ul>
+        {{#each productos}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Escuchar cambios en la lista de productos
+        socket.on('productos', (productos) => {
+            actualizarLista(productos);
+        });
+
+        // Función para actualizar la lista de productos en la vista
+        function actualizarLista(productos) {
+            const lista = document.querySelector('ul');
+            lista.innerHTML = '';
+
+            productos.forEach((producto) => {
+                const li = document.createElement('li');
+                li.textContent = producto;
+                lista.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

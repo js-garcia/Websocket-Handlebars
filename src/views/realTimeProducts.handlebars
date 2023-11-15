@@ -1,0 +1,68 @@
+<!-- views/realTimeProducts.handlebars -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos (Tiempo Real)</h1>
+
+    <form id="formularioProducto">
+        <label for="nombreProducto">Nombre:</label>
+        <input type="text" id="nombreProducto" required>
+
+        <label for="precioProducto">Precio:</label>
+        <input type="number" id="precioProducto" required>
+
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <ul id="realTimeList">
+        {{#each productos}}
+            <li>{{this.nombre}} - {{this.precio}}</li>
+        {{/each}}
+    </ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Escuchar cambios en la lista de productos
+        socket.on('productos', (productos) => {
+            actualizarLista(productos);
+        });
+
+        // Función para actualizar la lista de productos en la vista
+        function actualizarLista(productos) {
+            const lista = document.getElementById('realTimeList');
+            lista.innerHTML = '';
+
+            productos.forEach((producto) => {
+                const li = document.createElement('li');
+                li.textContent = `${producto.nombre} - ${producto.precio}`;
+                lista.appendChild(li);
+            });
+        }
+
+        // Capturar el evento de envío del formulario
+        const formularioProducto = document.getElementById('formularioProducto');
+        formularioProducto.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const nombre = document.getElementById('nombreProducto').value;
+            const precio = document.getElementById('precioProducto').value;
+
+            // Enviar el nuevo producto al servidor
+            socket.emit('nuevoProducto', { nombre, precio });
+
+            // Limpiar los campos del formulario
+            document.getElementById('nombreProducto').value = '';
+            document.getElementById('precioProducto').value = '';
+        });
+    </script>
+</body>
+</html>
+    
